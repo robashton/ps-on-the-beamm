@@ -1,8 +1,8 @@
 module BookSup where
 
+import Prelude
 import Effect
 import Erl.Data.List
-import Prelude
 
 import BookWeb as BookWeb
 import BookLibrary as BookLibrary

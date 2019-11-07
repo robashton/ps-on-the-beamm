@@ -24,6 +24,7 @@ import Pinto.Gen as Gen
 import Simple.JSON (class WriteForeign, readJSON, writeJSON)
 import Stetson (RestResult, StaticAssetLocation(..), StetsonHandler)
 import Stetson as Stetson
+import Stetson.Rest (contentTypesProvided)
 import Stetson.Rest as Rest
 import Unsafe.Coerce (unsafeCoerce)
 
@@ -49,6 +50,7 @@ init args = do
     # Stetson.bindTo 0 0 0 0
     # Stetson.startClear "http_listener"
   pure $ State {}
+
 
 books :: StetsonHandler (List Book)
 books =

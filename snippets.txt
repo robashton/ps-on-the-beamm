@@ -101,3 +101,17 @@ Main.purs
       _ <- Console.log "Yay"
       result <- Cool.writePoniesToFile "file.txt" ponies
       pure unit
+
+
+demo_ps
+==
+
+BookWeb.purs
+
+  hello :: StetsonHandler Unit
+  hello =
+    Rest.handler (\req -> Rest.initResult req unit)
+    # Rest.contentTypesProvided (\req state -> Rest.result ((tuple2 "text/html" provideText) : nil) req state)
+    # Rest.yeeha
+    where
+          provideText = Rest.result "hello world"
