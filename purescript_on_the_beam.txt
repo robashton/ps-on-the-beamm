@@ -1,0 +1,129 @@
+After nearly a decade of writing our software in Erlang, our codebases have started getting unwieldy despite our best efforts to manage this through other disciplinary methods. (That and dialyzer, but there are limits!)
+
+So we did what any sensible company would do, and hired "the Purerl guy" and set about working out how we could use the Purescript to Erlang compiler he'd written to help us with this. To that end since, we have already shipped two products and quietly open sourced a selection of the libraries we have built on top of Purerl to support those endeavours.
+
+In this session we'll start by looking at the super happy path (our ideal world) for end-to-end Purescript before going into detail on how some of it is implemented, the weak spots and pitfalls currently present and some of the huge hacks that are possible when using Purescript FFI to bind against "native Erlang" libraries.
+
+----
+- 45 minutes
+----
+
+====
+
+- Hi, who are we, what we build, etc, the usual story
+- Our codebase(s) (250k LoC erlang base libraries, ~30k LoC applications sat on top), 10+ years old
+- Strategies for keeping on top of this
+  - Basic bitch erlang, followed by
+    - Judicious use of records, type annotations, etc
+    - Compiler -> Dialyzer
+  - Picture of developer running dialyzer (skeleton_laptop.jpeg)
+
+- Front-end maturity
+  Javascript (EmberJS -> ReactJS -> Elm -> Purescript)
+
+Back-end maturity
+  Erlang -> Erlang with types -> ???
+  Erlang -> Erlang -> Purescript
+
+There's a fine history of using same language on server + client
+
+C#.NET + Silverlight
+Clojure + ClojureScript
+Java + JavaScript (lol, trolling)
+NodeJS + JavaScript
+Purescript + Purescript??
+
+What could go wrong?
+
+What do we get for free? (Now that Nick has done the hard work)
+===
+
+- Package management 
+- Existing packages? (sorta..)
+- Editor tooling (!!)
+- Documentation/Search (Pursuit) (demo)
+- Existing Erlang tools still work ( for the usual definition of works ) (Relx, Rebar3, etc)
+
+=== Let's try and clear all of this in 10 minutes, more if we're at derpconf ===
+
+The goal: Start writing applications in Purescript
+==
+
+Demo_1
+
+Erlang vs Purescript for
+
+- Application
+- Supervisor
+- Genserver
+- Cowboy 
+
+- And this would be great if this was a marketing talk, but...
+
+- So yes, that's exceedingly pretty but let's now look at some actual problems/solutions twixt the two... and how it's all implemented
+
+The basics
+===
+
+(demo_ps, build and run)
+
+
+Demo_2
+
+- Compilation workflow
+- Modules being generated
+- Hotloading code into running applications
+
+Demo_3
+
+  - Interacting with legacy code
+  - Problems with that (Erl.Data.List, Erl.List, Erl.Data.Map) (Homogeneous lists only thanks)
+  - Foreign types
+  - Effects
+  - A strange duality: Let it crash vs code that can't crash..
+  - Tbqh, we don't "let it crash in Erlang", "let it crash" is a convenience for unknown state cases
+  - So handling is no different here, 
+      
+      { ok, ReadFile } | { error, Reason } => Either ReadFileFail ReadFileSuccess
+      { ok, MyItem } | undefined =>  Maybe Item
+
+      ... and crashes still happen, that's okay, the code will just get reloaded
+
+Demo_4
+
+  - Third party code/packages?
+  - Back in the land of Pinto
+  - Receiving arbitrary messages, types and such
+  - Use callbacks (show MFA for hotloading..), demonstrate variable capture for context
+
+- Writing code for both server/client
+  - (Yes yes yes, don't, but whatever, view models and such are nice to share)
+  - Arrays vs Lists vs Erl.Data.List
+  - Records vs Records vs Records
+  - Simple.Json demo
+
+Summary
+==
+
+- It's easy to build an application
+  - OTP = Pinto
+  - Cowboy = Stetson
+- The 'happy path' is 'clone the demo repo' (sorry)
+
+The future
+==
+
+- We're going to carry on building software in it
+- Real world pain being fixed as we go
+- Hope others join us and do some cool things
+  - Native/idiomatic web server?
+  - Better patterns to be found? 
+
+
+
+===
+
+TODO: 
+  - Git repo the demos, then delete the code I need to write during the talk
+  - Create a text file containing the code I delete so I can read it off my ipad
+  - erl-process demo
