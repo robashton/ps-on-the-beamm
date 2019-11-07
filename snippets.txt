@@ -1,0 +1,103 @@
+demo_1
+==
+
+demo_2
+==
+
+Remember 
+  make clean
+  make
+  make beams
+
+  erl -pa ./beams
+
+  l(main@ps).
+
+  main@ps:add(4,4).
+
+Main.purs
+
+  import Prelude
+
+  foreign import base64 :: String -> String
+
+  add :: Int -> Int -> Int
+  add x y = x + y
+
+Main.erl
+
+  -module(main@foreign).
+
+  -export([
+           base64/1
+          ]).
+
+  base64(String) ->
+    base64:encode(String).
+
+
+demo_3
+==
+
+Let tooling do this for us..
+
+Cool.erl
+
+  -module(cool@foreign).
+
+  -export([
+           createPony/1,
+           areAnyPoniesNotAwesome/1,
+           writePoniesToFile/2
+          ]).
+
+  createPony(Name) ->
+    cool:create_pony(Name).
+
+  areAnyPoniesNotAwesome(Ponies) ->
+    cool:are_any_ponies_not_awesome(Ponies).
+
+  writePoniesToFile(Filename, Ponies) ->
+    fun() ->
+        case cool:write_ponies_to_file(Filename, Ponies) of
+          ok -> true;
+          _ -> false
+        end
+    end.
+
+Cool.purs
+
+  module Cool where
+
+  import Prelude
+
+  import Effect (Effect)
+  import Erl.Data.List (List)
+
+  foreign import data Pony :: Type
+
+  foreign import createPony :: String -> Pony
+  foreign import areAnyPoniesNotAwesome :: List Pony -> Boolean
+  foreign import writePoniesToFile :: String -> List Pony -> Effect Boolean
+
+Main.purs
+
+  import Cool (areAnyPoniesNotAwesome)
+  import Cool as Cool
+  import Effect (Effect)
+  import Effect.Console (log) as Console
+  import Erl.Data.List (nil, (:))
+
+  somethingCool :: Effect Unit
+  somethingCool = do
+    let ponies = Cool.createPony "Pinkie Pie"
+               : Cool.createPony "Rarity"
+               : nil
+    let notAwesome = Cool.areAnyPoniesNotAwesome ponies
+    if notAwesome then do
+      _ <- Console.log "Sadness"
+      pure unit
+    else do
+      _ <- Console.log "Yay"
+      result <- Cool.writePoniesToFile "file.txt" ponies
+      pure unit
