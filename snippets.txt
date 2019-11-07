@@ -115,3 +115,14 @@ BookWeb.purs
     # Rest.yeeha
     where
           provideText = Rest.result "hello world"
+
+
+Tick
+===
+
+Timer.sendEvery 1000 handleTick
+
+handleTick :: Effect Unit
+handleTick = do
+  _ <- Lager.info1 "What ~p" ""
+  pure unit

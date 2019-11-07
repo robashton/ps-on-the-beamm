@@ -40,8 +40,6 @@ init args = do
   connection <- Redis.open args.connectionString
   pure $ { connection }
 
-
-
 create :: Book -> Effect (Either String Book)
 create book = 
   Gen.doCall serverName \state@{ connection } -> do
@@ -77,4 +75,5 @@ findAll =
   Gen.doCall serverName \state@{ connection } -> do
     books <- Redis.findAll dbPrefix connection
     pure $ CallReply books state
+
 
